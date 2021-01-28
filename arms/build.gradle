@@ -1,22 +1,21 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin' // hilt
 }
 
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
-
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -30,6 +29,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding = true // 启用视图绑定
+    }
 }
 
 dependencies {
@@ -37,10 +39,88 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    // 核心库
+    api 'androidx.appcompat:appcompat:1.2.0'
+    // 核心库相关扩展
+    api 'androidx.activity:activity-ktx:1.1.0'
+    api 'androidx.fragment:fragment-ktx:1.2.5'
+    api 'androidx.core:core-ktx:1.3.2'
+    api 'androidx.collection:collection-ktx:1.1.0'
+    // 官方控件
+    api 'androidx.constraintlayout:constraintlayout:2.0.4'
+    api "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    // Material风格组件库
+    api 'com.google.android.material:material:1.2.1'
+    // 协程
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
+
+    // 网络请求
+    api 'com.squareup.okhttp3:okhttp:4.9.0'
+    api 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+    api 'com.squareup.retrofit2:retrofit:2.9.0'
+    api 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // 图片加载框架
+    api 'com.github.bumptech.glide:glide:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
+    api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
+
+    // 依赖注入
+    implementation 'com.google.dagger:hilt-android:2.29.1-alpha'
+    kapt 'com.google.dagger:hilt-android-compiler:2.29.1-alpha'
+
+    // 权限管理
+    api 'com.afollestad.assent:core:3.0.0-RC4'
+    api 'com.afollestad.assent:rationales:3.0.0-RC4'
+
+    // 文件下载
+    api 'com.liulishuo.okdownload:okdownload:1.0.7'
+    api 'com.liulishuo.okdownload:sqlite:1.0.7'
+    api 'com.liulishuo.okdownload:okhttp:1.0.7'
+    api 'com.liulishuo.okdownload:filedownloader:1.0.7'
+    api 'com.liulishuo.okdownload:ktx:1.0.7'
+
+    // MMKV
+    api 'com.tencent:mmkv-static:1.2.7'
+
+    // 腾讯x5内核
+    api 'com.tencent.tbs.tbssdk:sdk:43967'
+
+    // 对话框
+    api 'com.afollestad.material-dialogs:core:3.3.0'
+    api 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
+
+    // 安卓工具类库
+    api 'com.blankj:utilcodex:1.30.5'
+
+    // 二维码扫描
+    api 'com.king.zxing:zxing-lite:2.0.2'
+
+    // 加载反馈页管理框架
+    api 'com.kingja.loadsir:loadsir:1.3.8'
+
+    // RecyclerView适配器
+    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.6'
+    // RecyclerView分割线
+    api 'com.github.fondesa:recycler-view-divider:3.3.0'
+
+    // 图片选择器
+    api 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0'
+
+    // 选择器
+    api 'com.contrarywind:Android-PickerView:4.1.9'
+
+    // 图表库
+    api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // 可扩展/收缩布局
+    api 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 }
 
+kapt {
+    correctErrorTypes true // Hilt
+}
+
+// JitPack
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.icodeu'

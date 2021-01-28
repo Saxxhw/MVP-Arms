@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.zkyc.arms">
 
+    <!-- Glide、x5Web -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Glide、x5Web -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- x5Web -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <!-- x5Web -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- x5Web -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application>
+
+        <!-- 网页 -->
+        <activity
+            android:name=".feature.WebActivity"
+            android:screenOrientation="portrait" />
+
+        <!-- 二维码扫描 -->
+        <activity
+            android:name=".feature.QRCodeScanActivity"
+            android:label="@string/qr_code_scan"
+            android:screenOrientation="portrait" />
+
+        <!-- x5内核冷启动优化服务 -->
+        <service
+            android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
+            android:label="dexopt"
+            android:process=":dexopt" />
+    </application>
 </manifest>

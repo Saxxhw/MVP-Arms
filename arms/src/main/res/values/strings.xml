@@ -1,0 +1,14 @@
+<resources>
+    <!-- 数据加载状态 -->
+    <string name="callback_loading_message">努力加载中</string>
+    <string name="callback_loading_desc">请您耐心等候</string>
+    <string name="callback_empty_message">暂无数据</string>
+    <string name="callback_error_message">发生了错误</string>
+    <string name="callback_error_desc">请检查手机网络是否连接</string>
+    <!-- 二维码扫描 -->
+    <string name="qr_code_scan">二维码扫描</string>
+    <string name="qr_code_scan_label">请将二维码对准扫描框</string>
+    <!-- 权限相关 -->
+    <string name="permission_request_title">提示</string>
+    <string name="permission_camera">需要摄像头权限</string>
+</resources>
