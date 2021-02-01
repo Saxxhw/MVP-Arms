@@ -1,4 +1,31 @@
 <resources>
+    <!-- 错误码 -->
+    <string name="err_unknown_host">请检查网络连接</string>
+    <string name="err_socket_timeout">网络连接超时</string>
+    <string name="err_401">[401错误可能: 未授权 \\ 授权登录失败 \\ 登录过期]</string>
+    <string name="err_402">402请求参数异常</string>
+    <string name="err_403">403没权限哦</string>
+    <string name="err_404">404没找到哦</string>
+    <string name="err_422">422异常，提交数据格式不对吧？</string>
+    <string name="err_10001">token超时，需重新登录</string>
+    <string name="err_10002">用户名或密码错误</string>
+    <string name="err_10003">原密码输入错误</string>
+    <string name="err_10004">验证码错误</string>
+    <string name="err_10005">验证码超时</string>
+    <string name="err_10007">手机号不存在</string>
+    <string name="err_10008">手机号已经存在</string>
+    <string name="err_10009">无登录权限</string>
+    <string name="err_100009">今日已打卡</string>
+    <string name="err_1000">其他异常</string>
+    <string name="err_1001">系统异常</string>
+    <string name="err_1002">参数异常</string>
+    <string name="err_20001">工单信息有误</string>
+    <string name="err_20002">工单所属设备无责任人</string>
+    <string name="err_30001">设备已绑定</string>
+    <string name="err_40001">账户可用余额不足</string>
+    <string name="err_500001">已接单，请勿重复操作</string>
+    <string name="err_other">请求失败</string>
+    <string name="unknown_error">未知错误</string>
     <!-- 数据加载状态 -->
     <string name="callback_loading_message">努力加载中</string>
     <string name="callback_loading_desc">请您耐心等候</string>
@@ -11,4 +38,7 @@
     <!-- 权限相关 -->
     <string name="permission_request_title">提示</string>
     <string name="permission_camera">需要摄像头权限</string>
+    <!-- 图片预览 -->
+    <string name="picture_preview">预览</string>
+    <string name="picture_preview_page_num">%1$d/%2$d</string>
 </resources>

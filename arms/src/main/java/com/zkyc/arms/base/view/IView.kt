@@ -17,6 +17,16 @@ interface IView {
     fun toast(@StringRes msgId: Int)
 
     /**
+     * 加载更多结束
+     */
+    fun loadMoreEnd()
+
+    /**
+     * 加载更多失败
+     */
+    fun loadMoreFail()
+
+    /**
      * 展示进度条
      */
     fun showProgress()
@@ -45,4 +55,9 @@ interface IView {
      * 展示成功状态
      */
     fun showSuccess()
+
+    /**
+     * 重新登录
+     */
+    fun reLogin()
 }

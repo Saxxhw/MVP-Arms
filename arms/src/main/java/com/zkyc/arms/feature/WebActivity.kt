@@ -50,29 +50,29 @@ class WebActivity : BaseVBActivity<ActivityWebBinding>() {
 
     override fun initViewAndEvent(savedInstanceState: Bundle?) {
         // 初始化webView
-        initWebView(binding.webView)
+        initWebView(mBinding.webView)
         // 加载页面
-        binding.webView.loadUrl(mUrl)
+        mBinding.webView.loadUrl(mUrl)
     }
 
     override fun onResume() {
         super.onResume()
-        binding.webView.onResume()
+        mBinding.webView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.webView.onPause()
+        mBinding.webView.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        binding.webView.destroy()
+        mBinding.webView.destroy()
     }
 
     override fun onBackPressed() {
-        if (binding.webView.canGoBack()) {
-            binding.webView.goBack()
+        if (mBinding.webView.canGoBack()) {
+            mBinding.webView.goBack()
         } else {
             super.onBackPressed()
         }
@@ -166,13 +166,13 @@ class WebActivity : BaseVBActivity<ActivityWebBinding>() {
         override fun onProgressChanged(p0: WebView?, newProgress: Int) {
             super.onProgressChanged(p0, newProgress)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                binding.cpbLoading.setProgress(newProgress, true)
+                mBinding.cpbLoading.setProgress(newProgress, true)
             } else {
-                binding.cpbLoading.progress = newProgress
+                mBinding.cpbLoading.progress = newProgress
             }
             val max = 95
             if (newProgress > max) {
-                binding.cpbLoading.hide()
+                mBinding.cpbLoading.hide()
             }
         }
     }

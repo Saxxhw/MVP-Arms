@@ -23,7 +23,7 @@ abstract class BaseVBFragment<VB : ViewBinding>(@LayoutRes val contentLayoutId: 
      * 视图绑定实例
      */
     private var _binding: VB? = null
-    val mBinding get() = _binding!!
+    protected val mBinding get() = _binding!!
 
     /**
      * 懒加载标识
@@ -83,6 +83,16 @@ abstract class BaseVBFragment<VB : ViewBinding>(@LayoutRes val contentLayoutId: 
     }
 
     /**
+     * 加载更多结束
+     */
+    override fun loadMoreEnd() {}
+
+    /**
+     * 加载更多失败
+     */
+    override fun loadMoreFail() {}
+
+    /**
      * 展示进度条
      */
     override fun showProgress() {
@@ -129,15 +139,19 @@ abstract class BaseVBFragment<VB : ViewBinding>(@LayoutRes val contentLayoutId: 
         loadService?.showCallback(SuccessCallback::class.java)
     }
 
+    override fun reLogin() {
+
+    }
+
     override fun onReload(v: View?) {}
 
-    abstract fun bindVB(view: View): VB
+    protected abstract fun bindVB(view: View): VB
 
-    open fun getLoadLayout(): View? = null
+    protected open fun getLoadLayout(): View? = null
 
-    open fun getBundleExtras(extras: Bundle) {}
+    protected open fun getBundleExtras(extras: Bundle) {}
 
-    open fun initView(savedInstanceState: Bundle?) {}
+    protected open fun initView(savedInstanceState: Bundle?) {}
 
-    open fun initData() {}
+    protected open fun initData() {}
 }

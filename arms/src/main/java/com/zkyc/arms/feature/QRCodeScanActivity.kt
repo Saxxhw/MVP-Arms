@@ -51,7 +51,7 @@ class QRCodeScanActivity : BaseVBActivity<ActivityQrCodeScanBinding>(),
         // 开始扫描
         startCamera()
         // 绑定监听事件
-        binding.ivFlashLight.setOnClickListener(this)
+        mBinding.ivFlashLight.setOnClickListener(this)
     }
 
     override fun onDestroy() {
@@ -81,7 +81,7 @@ class QRCodeScanActivity : BaseVBActivity<ActivityQrCodeScanBinding>(),
      */
     private fun initCameraScan() {
         // 生成扫码实例
-        mCameraScan = DefaultCameraScan(this, binding.previewView)
+        mCameraScan = DefaultCameraScan(this, mBinding.previewView)
         // 初始化解码配置
         val decodeConfig = DecodeConfig()
         decodeConfig

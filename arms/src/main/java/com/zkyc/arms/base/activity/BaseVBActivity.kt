@@ -24,7 +24,7 @@ abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
     /**
      * 视图绑定实例
      */
-    lateinit var binding: VB
+    protected lateinit var mBinding: VB
 
     /**
      * 加载对话框
@@ -38,8 +38,8 @@ abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = inflateVB(layoutInflater)
-        setContentView(binding.root)
+        mBinding = inflateVB(layoutInflater)
+        setContentView(mBinding.root)
         initToolbar()
         intent?.extras?.let { getBundleExtras(it) }
         getLoadLayout()?.let { loadService = LoadSir.getDefault().register(it, this) }
@@ -61,6 +61,16 @@ abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
     override fun toast(msgId: Int) {
         ToastUtils.showShort(msgId)
     }
+
+    /**
+     * 加载更多结束
+     */
+    override fun loadMoreEnd() {}
+
+    /**
+     * 加载更多失败
+     */
+    override fun loadMoreFail() {}
 
     /**
      * 展示进度条
@@ -109,6 +119,10 @@ abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
         loadService?.showCallback(SuccessCallback::class.java)
     }
 
+    override fun reLogin() {
+
+    }
+
     /**
      * 初始化标题栏
      */
@@ -128,15 +142,15 @@ abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
 
     override fun onReload(v: View?) {}
 
-    abstract fun inflateVB(inflater: LayoutInflater): VB
+    protected abstract fun inflateVB(inflater: LayoutInflater): VB
 
-    open fun showHomeButton() = true
+    protected open fun showHomeButton() = true
 
-    open fun initNavigation(toolbar: MaterialToolbar) = toolbar.setNavigationOnClickListener { onBackPressed() }
+    protected open fun initNavigation(toolbar: MaterialToolbar) = toolbar.setNavigationOnClickListener { onBackPressed() }
 
-    open fun getLoadLayout(): View? = null
+    protected open fun getLoadLayout(): View? = null
 
-    open fun getBundleExtras(extras: Bundle) {}
+    protected open fun getBundleExtras(extras: Bundle) {}
 
-    abstract fun initViewAndEvent(savedInstanceState: Bundle?)
+    protected abstract fun initViewAndEvent(savedInstanceState: Bundle?)
 }

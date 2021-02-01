@@ -33,6 +33,11 @@
             android:label="@string/qr_code_scan"
             android:screenOrientation="portrait" />
 
+        <!-- 图片预览 -->
+        <activity
+            android:name=".feature.PicturePreviewActivity"
+            android:label="@string/picture_preview" />
+
         <!-- x5内核冷启动优化服务 -->
         <service
             android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
