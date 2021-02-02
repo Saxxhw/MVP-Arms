@@ -33,6 +33,7 @@ abstract class BaseRepository<T>(scope: CoroutineScope, protected val view: IVie
     }
 
     private suspend fun execute() {
+        start()
         try {
             val response = createCall().await()
             if (response.success()) {
