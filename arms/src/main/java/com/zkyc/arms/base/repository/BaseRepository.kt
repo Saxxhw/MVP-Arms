@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.await
 
-abstract class BaseRepository<T>(scope: CoroutineScope, protected val mView: IView?) {
+abstract class BaseRepository<T>(scope: CoroutineScope, protected val view: IView?) {
 
     init {
         scope.launch { execute() }
@@ -24,11 +24,11 @@ abstract class BaseRepository<T>(scope: CoroutineScope, protected val mView: IVi
     protected abstract fun requestSucceed(data: T)
 
     protected open fun error(e: Exception) {
-        mView?.dismissProgress() // 关闭进度条对话框
-        mView?.showError() // 展示异常页
-        mView?.toast(ExceptionUtil.e2ResId(e)) // 提示错误信息
+        view?.dismissProgress() // 关闭进度条对话框
+        view?.showError() // 展示异常页
+        view?.toast(ExceptionUtil.e2ResId(e)) // 提示错误信息
         if (ExceptionUtil.isTokenTimeout(e)) { // token超时引导用户重新登录
-            mView?.reLogin()
+            view?.reLogin()
         }
     }
 

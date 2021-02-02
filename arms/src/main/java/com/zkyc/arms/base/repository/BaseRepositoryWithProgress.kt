@@ -3,14 +3,14 @@ package com.zkyc.arms.base.repository
 import com.zkyc.arms.base.view.IView
 import kotlinx.coroutines.CoroutineScope
 
-abstract class BaseRepositoryWithProgress<T>(scope: CoroutineScope, v: IView?) :
-    BaseRepository<T>(scope, v) {
+abstract class BaseRepositoryWithProgress<T>(scope: CoroutineScope, view: IView?) :
+    BaseRepository<T>(scope, view) {
 
     override fun start() {
-        mView?.showProgress()
+        view?.showProgress()
     }
 
     override fun requestSucceed(data: T) {
-        mView?.dismissProgress()
+        view?.dismissProgress()
     }
 }

@@ -1,6 +1,6 @@
 package com.zkyc.arms.feature
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,7 +23,7 @@ class PicturePreviewActivity : BaseVBActivity<ActivityPicturePreviewBinding>(), 
         private const val ARG_PICTURE_URLS = "picture_urls"
         private const val ARG_POSITION = "position"
 
-        fun startWith(activity: Activity, urls: List<String>, position: Int) = with(activity) {
+        fun startWith(context: Context, urls: List<String>, position: Int) = with(context) {
             val starter = Intent(this, PicturePreviewActivity::class.java)
             starter.putExtras(
                 bundleOf(
@@ -31,12 +31,14 @@ class PicturePreviewActivity : BaseVBActivity<ActivityPicturePreviewBinding>(), 
                     ARG_POSITION to position
                 )
             )
+            starter.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(starter)
         }
 
-        fun startWith(activity: Activity, url: String) = with(activity) {
+        fun startWith(context: Context, url: String) = with(context) {
             val starter = Intent(this, PicturePreviewActivity::class.java)
             starter.putExtras(bundleOf(ARG_PICTURE_URLS to arrayOf(url), ARG_POSITION to 0))
+            starter.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(starter)
         }
     }

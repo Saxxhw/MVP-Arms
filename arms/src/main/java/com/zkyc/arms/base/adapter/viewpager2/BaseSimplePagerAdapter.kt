@@ -1,4 +1,4 @@
-package com.zkyc.arms.base.adapter.viewpager
+package com.zkyc.arms.base.adapter.viewpager2
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment

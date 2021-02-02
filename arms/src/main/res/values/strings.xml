@@ -41,4 +41,8 @@
     <!-- 图片预览 -->
     <string name="picture_preview">预览</string>
     <string name="picture_preview_page_num">%1$d/%2$d</string>
+    <!-- VoiceView -->
+    <string name="vv_duration_format">%1$ds</string>
+    <string name="vv_downloading">下载中…</string>
+    <string name="vv_download_failure">音频文件下载失败</string>
 </resources>
