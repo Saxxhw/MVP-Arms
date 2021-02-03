@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 5
-        versionName "0.5"
+        versionCode 6
+        versionName "0.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -115,6 +115,10 @@ dependencies {
 
     // 可扩展/收缩布局
     api 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
+
+    // 高德地图、定位
+    api 'com.amap.api:3dmap:latest.integration'
+    api 'com.amap.api:location:latest.integration'
 }
 
 kapt {

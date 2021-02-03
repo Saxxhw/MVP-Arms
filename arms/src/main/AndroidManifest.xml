@@ -3,22 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.zkyc.arms">
 
-    <!-- Glide、x5Web -->
+    <!-- Glide、x5Web、高德地图、定位 -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Glide、x5Web -->
+    <!-- Glide、x5Web、高德地图、定位 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- x5Web -->
+    <!-- x5Web、高德地图、定位 -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
-    <!-- x5Web -->
+    <!-- x5Web、高德地图、定位 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-    <!-- x5Web -->
+    <!-- x5Web、高德地图、定位 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!-- 高德地图、定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- 定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- 定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <!-- 定位 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <application>
 
@@ -43,5 +55,8 @@
             android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
             android:label="dexopt"
             android:process=":dexopt" />
+
+        <!-- 高德定位服务 -->
+        <service android:name="com.amap.api.location.APSService" />
     </application>
 </manifest>
