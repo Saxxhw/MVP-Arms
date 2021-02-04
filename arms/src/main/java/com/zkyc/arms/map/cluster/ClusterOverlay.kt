@@ -37,16 +37,18 @@ class ClusterOverlay(
 
     private var mAMap: AMap = aMap
     private var mContext: Context = context
-    private var mClusterItems: MutableList<ClusterItem> =
-        clusterItems?.toMutableList() ?: mutableListOf()
+    private var mClusterItems: MutableList<ClusterItem> = clusterItems?.toMutableList() ?: mutableListOf()
     private var mClusters: MutableList<Cluster> = mutableListOf()
     private var mClusterSize: Int = 0
     private var mClusterClickListener: ClusterClickListener? = null
     private var mClusterRender: ClusterRender? = null
     private val mAddMarkers = mutableListOf<Marker>()
     private var mClusterDistance: Double = 0.0
-    private var mLruCache: LruCache<Int, BitmapDescriptor> =
-        object : LruCache<Int, BitmapDescriptor>(80) {}
+    private var mLruCache: LruCache<Int, BitmapDescriptor> = object : LruCache<Int, BitmapDescriptor>(80) {
+        override fun entryRemoved(evicted: Boolean, key: Int?, oldValue: BitmapDescriptor?, newValue: BitmapDescriptor?) {
+            oldValue?.bitmap?.recycle()
+        }
+    }
     private val mMarkerHandlerThread = HandlerThread("addMarker")
     private val mSignClusterThread = HandlerThread("calculateCluster")
     private lateinit var mMarkerHandler: Handler
@@ -101,9 +103,7 @@ class ClusterOverlay(
         mMarkerHandler.removeCallbacksAndMessages(null)
         mSignClusterThread.quit()
         mMarkerHandlerThread.quit()
-        for (marker in mAddMarkers) {
-            marker.remove()
-        }
+        mAddMarkers.forEach { it.remove() }
         mAddMarkers.clear()
         mLruCache.evictAll()
     }
@@ -143,18 +143,16 @@ class ClusterOverlay(
      * 将聚合元素添加至地图上
      */
     private fun addClusterToMap(clusters: List<Cluster>) {
-        val removeMarkers = arrayListOf<Marker>()
+        val removeMarkers = mutableListOf<Marker>()
         removeMarkers.addAll(mAddMarkers)
         val alphaAnimation = AlphaAnimation(1f, 0f)
         val animationListener = AnimationListener(removeMarkers)
-        for (marker in removeMarkers) {
-            marker.setAnimation(alphaAnimation)
-            marker.setAnimationListener(animationListener)
-            marker.startAnimation()
+        removeMarkers.forEach {
+            it.setAnimation(alphaAnimation)
+            it.setAnimationListener(animationListener)
+            it.startAnimation()
         }
-        for (cluster in clusters) {
-            addSingleClusterToMap(cluster)
-        }
+        clusters.forEach { addSingleClusterToMap(it) }
     }
 
     private val mADDAnimation = AlphaAnimation(0f, 1f)
@@ -181,20 +179,18 @@ class ClusterOverlay(
         mIsCanceled = false
         mClusters.clear()
         val visibleBounds = mAMap.projection.visibleRegion.latLngBounds
-        for (clusterItem in mClusterItems) {
+        mClusterItems.forEach { clusterItem ->
             if (mIsCanceled) {
                 return
             }
             val latlng = clusterItem.getPosition()
-            if (visibleBounds.contains(latlng)) {
+            if (latlng != null && visibleBounds.contains(latlng)) {
                 var cluster = getCluster(latlng, mClusters)
-                if (cluster != null) {
-                    cluster.addClusterItem(clusterItem)
-                } else {
+                if (cluster == null) {
                     cluster = Cluster(latlng)
                     mClusters.add(cluster)
-                    cluster.addClusterItem(clusterItem)
                 }
+                cluster.addClusterItem(clusterItem)
             }
         }
         //复制一份数据，规避同步
@@ -226,25 +222,27 @@ class ClusterOverlay(
     private fun calculateSingleCluster(clusterItem: ClusterItem) {
         val visibleBounds = mAMap.projection.visibleRegion.latLngBounds
         val latlng = clusterItem.getPosition()
-        if (!visibleBounds.contains(latlng)) {
-            return
-        }
-        var cluster = getCluster(latlng, mClusters)
-        if (cluster != null) {
-            cluster.addClusterItem(clusterItem)
-            val message = Message.obtain()
-            message.what = UPDATE_SINGLE_CLUSTER
-            message.obj = cluster
-            mMarkerHandler.removeMessages(UPDATE_SINGLE_CLUSTER)
-            mMarkerHandler.sendMessageDelayed(message, 5)
-        } else {
-            cluster = Cluster(latlng)
-            mClusters.add(cluster)
-            cluster.addClusterItem(clusterItem)
-            val message = Message.obtain()
-            message.what = ADD_SINGLE_CLUSTER
-            message.obj = cluster
-            mMarkerHandler.sendMessage(message)
+        if (latlng != null) {
+            if (!visibleBounds.contains(latlng)) {
+                return
+            }
+            var cluster = getCluster(latlng, mClusters)
+            if (cluster != null) {
+                cluster.addClusterItem(clusterItem)
+                val message = Message.obtain()
+                message.what = UPDATE_SINGLE_CLUSTER
+                message.obj = cluster
+                mMarkerHandler.removeMessages(UPDATE_SINGLE_CLUSTER)
+                mMarkerHandler.sendMessageDelayed(message, 5)
+            } else {
+                cluster = Cluster(latlng)
+                mClusters.add(cluster)
+                cluster.addClusterItem(clusterItem)
+                val message = Message.obtain()
+                message.what = ADD_SINGLE_CLUSTER
+                message.obj = cluster
+                mMarkerHandler.sendMessage(message)
+            }
         }
     }
 
@@ -255,11 +253,11 @@ class ClusterOverlay(
      * @return
      */
     private fun getCluster(latLng: LatLng?, clusters: List<Cluster>): Cluster? {
-        for (cluster in clusters) {
-            val clusterCenterPoint = cluster.latLng
+        clusters.forEach {
+            val clusterCenterPoint = it.latLng
             val distance = AMapUtils.calculateLineDistance(latLng, clusterCenterPoint)
             if (distance < mClusterDistance && mAMap.cameraPosition.zoom < 19) {
-                return cluster
+                return it
             }
         }
         return null
