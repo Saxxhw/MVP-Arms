@@ -7,6 +7,7 @@ abstract class BaseRepositoryWithLoading<T : List<*>>(scope: CoroutineScope, vie
     BaseRepository<T>(scope, view) {
 
     override fun start() {
+        super.start()
         view?.showLoading()
     }
 

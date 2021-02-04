@@ -7,6 +7,7 @@ abstract class BaseRepositoryWithProgress<T>(scope: CoroutineScope, view: IView?
     BaseRepository<T>(scope, view) {
 
     override fun start() {
+        super.start()
         view?.showProgress()
     }
 

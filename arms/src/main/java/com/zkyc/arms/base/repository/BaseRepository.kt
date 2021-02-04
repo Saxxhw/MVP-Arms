@@ -15,7 +15,7 @@ abstract class BaseRepository<T>(scope: CoroutineScope, protected val view: IVie
         scope.launch { execute() }
     }
 
-    protected abstract fun start()
+    protected open fun start(){}
 
     protected abstract fun createCall(): Call<ApiResponse<T>>
 

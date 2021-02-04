@@ -17,6 +17,7 @@ import com.zkyc.arms.loadsir.EmptyCallback
 import com.zkyc.arms.loadsir.ErrorCallback
 import com.zkyc.arms.loadsir.LoadingCallback
 import com.zkyc.arms.progress.ACProgressFlower
+import org.greenrobot.eventbus.EventBus
 
 abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
     Callback.OnReloadListener {
@@ -44,6 +45,20 @@ abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
         intent?.extras?.let { getBundleExtras(it) }
         getLoadLayout()?.let { loadService = LoadSir.getDefault().register(it, this) }
         initViewAndEvent(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (needEventBus()) {
+            EventBus.getDefault().register(this)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (needEventBus()) {
+            EventBus.getDefault().unregister(this)
+        }
     }
 
     /**
@@ -146,11 +161,14 @@ abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), IView,
 
     protected open fun showHomeButton() = true
 
-    protected open fun initNavigation(toolbar: MaterialToolbar) = toolbar.setNavigationOnClickListener { onBackPressed() }
+    protected open fun initNavigation(toolbar: MaterialToolbar) =
+        toolbar.setNavigationOnClickListener { onBackPressed() }
 
     protected open fun getLoadLayout(): View? = null
 
     protected open fun getBundleExtras(extras: Bundle) {}
 
     protected abstract fun initViewAndEvent(savedInstanceState: Bundle?)
+
+    open fun needEventBus() = false
 }

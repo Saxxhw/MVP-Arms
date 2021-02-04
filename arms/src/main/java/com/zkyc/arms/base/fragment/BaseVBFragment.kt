@@ -15,6 +15,7 @@ import com.zkyc.arms.loadsir.EmptyCallback
 import com.zkyc.arms.loadsir.ErrorCallback
 import com.zkyc.arms.loadsir.LoadingCallback
 import com.zkyc.arms.progress.ACProgressFlower
+import org.greenrobot.eventbus.EventBus
 
 abstract class BaseVBFragment<VB : ViewBinding>(@LayoutRes val contentLayoutId: Int) :
     Fragment(contentLayoutId), IView, Callback.OnReloadListener {
@@ -52,11 +53,25 @@ abstract class BaseVBFragment<VB : ViewBinding>(@LayoutRes val contentLayoutId: 
         initView(savedInstanceState)
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (needEventBus()) {
+            EventBus.getDefault().register(this)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         if (!isLoaded && !isHidden) {
             initData()
             isLoaded = true
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (needEventBus()) {
+            EventBus.getDefault().unregister(this)
         }
     }
 
@@ -154,4 +169,6 @@ abstract class BaseVBFragment<VB : ViewBinding>(@LayoutRes val contentLayoutId: 
     protected open fun initView(savedInstanceState: Bundle?) {}
 
     protected open fun initData() {}
+
+    protected open fun needEventBus() = false
 }
