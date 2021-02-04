@@ -1,30 +1,32 @@
-package com.zkyc.arms.map.cluster
+package com.zkyc.arms.map
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.util.LruCache
 import android.util.TypedValue
 import android.view.Gravity
 import android.widget.TextView
 import com.amap.api.maps.AMap
-import com.amap.api.maps.AMap.OnCameraChangeListener
-import com.amap.api.maps.AMap.OnMarkerClickListener
 import com.amap.api.maps.AMapUtils
 import com.amap.api.maps.model.*
 import com.amap.api.maps.model.animation.AlphaAnimation
 import com.amap.api.maps.model.animation.Animation
 import com.zkyc.arms.R
+import com.zkyc.arms.map.cluster.Cluster
+import com.zkyc.arms.map.cluster.ClusterClickListener
+import com.zkyc.arms.map.cluster.ClusterItem
+import com.zkyc.arms.map.cluster.ClusterRender
 
+/**
+ * 整体设计采用了两个线程，一个线程用于计算聚合数据，一个线程负责处理Marker相关操作
+ */
 class ClusterOverlay(
     context: Context,
     aMap: AMap,
     clusterSize: Int,
     clusterItems: List<ClusterItem>? = null
-) : OnCameraChangeListener, OnMarkerClickListener {
+) : AMap.OnCameraChangeListener, AMap.OnMarkerClickListener {
 
     companion object {
         // MarkerHandler相关
@@ -68,7 +70,7 @@ class ClusterOverlay(
     /**
      * 设置聚合点的点击事件
      *
-     * @param listener 点击事件
+     * @param listener
      */
     fun setOnClusterClickListener(listener: ClusterClickListener) {
         mClusterClickListener = listener
@@ -77,29 +79,25 @@ class ClusterOverlay(
     /**
      * 添加一个聚合点
      *
-     * @param item 聚合点
+     * @param item
      */
     fun addClusterItem(item: ClusterItem) {
-        val message = Message.obtain().apply {
-            what = CALCULATE_SINGLE_CLUSTER
-            obj = item
-        }
+        val message = Message.obtain()
+        message.what = CALCULATE_SINGLE_CLUSTER
+        message.obj = item
         mSignClusterHandler.sendMessage(message)
     }
 
     /**
      * 设置聚合元素的渲染样式，不设置则默认为气泡加数字形式进行渲染
      *
-     * @param render 渲染样式
+     * @param render
      */
     fun setClusterRenderer(render: ClusterRender) {
         mClusterRender = render
     }
 
-    /**
-     * 销毁资源
-     */
-    fun onDestroy() {
+    fun onDestory() {
         mIsCanceled = true
         mSignClusterHandler.removeCallbacksAndMessages(null)
         mMarkerHandler.removeCallbacksAndMessages(null)
@@ -124,17 +122,18 @@ class ClusterOverlay(
 
     override fun onCameraChangeFinish(p0: CameraPosition?) {
         mPXInMeters = mAMap.scalePerPixel
-        mClusterDistance = mPXInMeters * mClusterSize.toDouble()
+        mClusterDistance = (mPXInMeters * mClusterSize).toDouble()
         assignClusters()
     }
 
-    override fun onMarkerClick(p0: Marker?): Boolean {
+    // 点击事件
+    override fun onMarkerClick(arg0: Marker?): Boolean {
         if (mClusterClickListener == null) {
             return true
         }
-        val cluster = p0?.`object` as? Cluster
+        val cluster = arg0?.`object` as? Cluster
         if (cluster != null) {
-            mClusterClickListener?.onClick(p0, cluster.getClusterItems())
+            mClusterClickListener?.onClick(arg0, cluster.getClusterItems())
             return true
         }
         return false
@@ -161,12 +160,12 @@ class ClusterOverlay(
     /**
      * 将单个聚合元素添加至地图显示
      *
-     * @param cluster 聚合元素
+     * @param cluster
      */
     private fun addSingleClusterToMap(cluster: Cluster) {
-        val latlng = cluster.latLng
+        val latLng = cluster.latLng
         val markerOptions = MarkerOptions()
-        markerOptions.anchor(0.5f, 0.5f).icon(getBitmapDes(cluster)).position(latlng)
+        markerOptions.anchor(0.5f, 0.5f).icon(getBitmapDes(cluster)).position(latLng)
         val marker = mAMap.addMarker(markerOptions)
         marker.setAnimation(mADDAnimation)
         marker.setObject(cluster)
@@ -185,25 +184,21 @@ class ClusterOverlay(
                 return
             }
             val latlng = clusterItem.getPosition()
-            if (latlng != null) {
-                if (visibleBounds.contains(latlng)) {
-                    var cluster = getCluster(latlng, mClusters)
-                    if (cluster == null) {
-                        cluster = Cluster(latlng)
-                        mClusters.add(cluster)
-                    }
-                    cluster.addClusterItem(clusterItem)
+            if (latlng != null && visibleBounds.contains(latlng)) {
+                var cluster = getCluster(latlng, mClusters)
+                if (cluster == null) {
+                    cluster = Cluster(latlng)
+                    mClusters.add(cluster)
                 }
+                cluster.addClusterItem(clusterItem)
             }
         }
-
         //复制一份数据，规避同步
         val clusters = mutableListOf<Cluster>()
         clusters.addAll(mClusters)
-        val message = Message.obtain().apply {
-            what = ADD_CLUSTER_LIST
-            obj = clusters
-        }
+        val message = Message.obtain()
+        message.what = ADD_CLUSTER_LIST
+        message.obj = clusters
         if (mIsCanceled) {
             return
         }
@@ -222,7 +217,7 @@ class ClusterOverlay(
     /**
      * 在已有的聚合基础上，对添加的单个元素进行聚合
      *
-     * @param clusterItem 聚合元素
+     * @param clusterItem
      */
     private fun calculateSingleCluster(clusterItem: ClusterItem) {
         val visibleBounds = mAMap.projection.visibleRegion.latLngBounds
@@ -234,20 +229,18 @@ class ClusterOverlay(
             var cluster = getCluster(latlng, mClusters)
             if (cluster != null) {
                 cluster.addClusterItem(clusterItem)
-                val message = Message.obtain().apply {
-                    what = UPDATE_SINGLE_CLUSTER
-                    obj = cluster
-                }
+                val message = Message.obtain()
+                message.what = UPDATE_SINGLE_CLUSTER
+                message.obj = cluster
                 mMarkerHandler.removeMessages(UPDATE_SINGLE_CLUSTER)
                 mMarkerHandler.sendMessageDelayed(message, 5)
             } else {
                 cluster = Cluster(latlng)
                 mClusters.add(cluster)
                 cluster.addClusterItem(clusterItem)
-                val message = Message.obtain().apply {
-                    what = ADD_SINGLE_CLUSTER
-                    obj = cluster
-                }
+                val message = Message.obtain()
+                message.what = ADD_SINGLE_CLUSTER
+                message.obj = cluster
                 mMarkerHandler.sendMessage(message)
             }
         }
@@ -256,10 +249,10 @@ class ClusterOverlay(
     /**
      * 根据一个点获取是否可以依附的聚合点，没有则返回null
      *
-     * @param latLng 经纬度
-     * @return 聚合点
+     * @param latLng
+     * @return
      */
-    private fun getCluster(latLng: LatLng, clusters: List<Cluster>): Cluster? {
+    private fun getCluster(latLng: LatLng?, clusters: List<Cluster>): Cluster? {
         clusters.forEach {
             val clusterCenterPoint = it.latLng
             val distance = AMapUtils.calculateLineDistance(latLng, clusterCenterPoint)
@@ -308,6 +301,19 @@ class ClusterOverlay(
     //-----------------------辅助内部类用---------------------------------------------
 
     /**
+     * marker渐变动画，动画结束后将Marker删除
+     */
+    class AnimationListener(private val mRemoveMarkers: MutableList<Marker>) : Animation.AnimationListener {
+
+        override fun onAnimationStart() {}
+
+        override fun onAnimationEnd() {
+            mRemoveMarkers.forEach { it.remove() }
+            mRemoveMarkers.clear()
+        }
+    }
+
+    /**
      * 处理market添加，更新等操作
      */
     inner class MarkerHandler(looper: Looper) : Handler(looper) {
@@ -344,20 +350,6 @@ class ClusterOverlay(
                     calculateSingleCluster(item)
                 }
             }
-        }
-    }
-
-    /**
-     * marker渐变动画，动画结束后将Marker删除
-     */
-    class AnimationListener(private val mRemoveMarkers: MutableList<Marker>) :
-        Animation.AnimationListener {
-
-        override fun onAnimationStart() {}
-
-        override fun onAnimationEnd() {
-            mRemoveMarkers.forEach { it.remove() }
-            mRemoveMarkers.clear()
         }
     }
 }
