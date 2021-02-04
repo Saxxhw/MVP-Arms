@@ -270,7 +270,7 @@ class ClusterOverlay(
      */
     private fun getBitmapDes(cluster: Cluster): BitmapDescriptor {
         val num = cluster.getClusterCount()
-        var bitmapDescriptor: BitmapDescriptor
+        var bitmapDescriptor: BitmapDescriptor?
         val bg = mClusterRender?.getDrawable(cluster)
         val textView = TextView(mContext)
         if (num == 1) {
