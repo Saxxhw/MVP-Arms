@@ -270,36 +270,26 @@ class ClusterOverlay(
      */
     private fun getBitmapDes(cluster: Cluster): BitmapDescriptor {
         val num = cluster.getClusterCount()
+        var bitmapDescriptor: BitmapDescriptor
+        val bg = mClusterRender?.getDrawable(cluster)
+        val textView = TextView(mContext)
         if (num == 1) {
-            val textView = TextView(mContext)
-            val bg = mClusterRender?.getDrawable(cluster)
-            if (mClusterRender != null && bg != null) {
-                textView.background = bg
-            } else {
-                textView.setBackgroundResource(R.drawable.ic_default_cluster)
-            }
-            return BitmapDescriptorFactory.fromView(textView)
+            textView.setBackgroundResource(if (mClusterRender != null && bg != null) bg else R.drawable.ic_default_marker)
+            bitmapDescriptor = BitmapDescriptorFactory.fromView(textView)
         } else {
-            var bitmapDescriptor = mLruCache.get(num)
+            bitmapDescriptor = mLruCache.get(num)
             if (bitmapDescriptor == null) {
-                val textView = TextView(mContext)
-                if (num > 1) {
-                    val tile = num.toString()
-                    textView.text = tile
-                }
+                val tile = num.toString()
+                textView.text = tile
                 textView.gravity = Gravity.CENTER
                 textView.setTextColor(Color.BLACK)
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-                if (mClusterRender != null && mClusterRender?.getDrawable(cluster) != null) {
-                    textView.background = mClusterRender?.getDrawable(cluster)
-                } else {
-                    textView.setBackgroundResource(R.drawable.ic_default_cluster)
-                }
+                textView.setBackgroundResource(if (mClusterRender != null && bg != null) bg else R.drawable.ic_default_clusters)
                 bitmapDescriptor = BitmapDescriptorFactory.fromView(textView)
                 mLruCache.put(num, bitmapDescriptor)
             }
-            return bitmapDescriptor
         }
+        return bitmapDescriptor
     }
 
     /**
