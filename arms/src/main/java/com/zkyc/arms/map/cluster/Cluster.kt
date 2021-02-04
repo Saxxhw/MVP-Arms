@@ -3,7 +3,7 @@ package com.zkyc.arms.map.cluster
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Marker
 
-class Cluster(val latLng: LatLng) {
+class Cluster(val latLng: LatLng?) {
 
     private val clusterItems: MutableList<ClusterItem> = mutableListOf()
     private lateinit var marker: Marker

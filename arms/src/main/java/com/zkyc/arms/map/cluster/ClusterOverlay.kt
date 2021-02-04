@@ -254,7 +254,7 @@ class ClusterOverlay(
      * @param latLng
      * @return
      */
-    private fun getCluster(latLng: LatLng, clusters: List<Cluster>): Cluster? {
+    private fun getCluster(latLng: LatLng?, clusters: List<Cluster>): Cluster? {
         for (cluster in clusters) {
             val clusterCenterPoint = cluster.latLng
             val distance = AMapUtils.calculateLineDistance(latLng, clusterCenterPoint)

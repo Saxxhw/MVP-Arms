@@ -7,5 +7,5 @@ interface ClusterItem {
     /**
      * 返回聚合元素的地理位置
      */
-    fun getPosition(): LatLng
+    fun getPosition(): LatLng?
 }
