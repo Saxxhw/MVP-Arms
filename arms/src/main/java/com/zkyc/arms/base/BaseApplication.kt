@@ -3,6 +3,10 @@ package com.zkyc.arms.base
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
+import androidx.work.Configuration
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.kingja.loadsir.core.LoadSir
 import com.tencent.mmkv.MMKV
 import com.tencent.smtt.export.external.TbsCoreSettings
@@ -10,9 +14,10 @@ import com.tencent.smtt.sdk.QbSdk
 import com.zkyc.arms.loadsir.EmptyCallback
 import com.zkyc.arms.loadsir.ErrorCallback
 import com.zkyc.arms.loadsir.LoadingCallback
+import com.zkyc.arms.map.MapStyleInitializer
 import java.util.*
 
-abstract class BaseApplication : Application(), Application.ActivityLifecycleCallbacks {
+abstract class BaseApplication : Application(), Configuration.Provider, Application.ActivityLifecycleCallbacks {
 
     // Activity栈
     private val activities: Stack<Activity> = Stack()
@@ -36,8 +41,15 @@ abstract class BaseApplication : Application(), Application.ActivityLifecycleCal
             .commit()
         // 初始化 MMKV
         MMKV.initialize(this)
+        // 初始化地图样式相关
+        WorkManager.getInstance(this)
+            .enqueue(OneTimeWorkRequestBuilder<MapStyleInitializer>().build())
         // 初始化x5内核
         initX5Web()
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder().setMinimumLoggingLevel(Log.INFO).build()
     }
 
     override fun onActivityStarted(p0: Activity) {}
